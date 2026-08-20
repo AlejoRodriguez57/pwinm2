@@ -1,0 +1,3 @@
+no se muestran las imagenes
+se rompe la pagina de articulo propiedad
+aparece las propiedades

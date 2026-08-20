@@ -1,0 +1,132 @@
+data importante de redireccionamiento:
+Eso se hace mediante enlaces especiales (URL schemes). Cuando el usuario hace clic en un botón, el navegador abre la aplicación correspondiente o ejecuta la acción.
+
+1. Abrir un chat de WhatsApp
+
+Se utiliza una URL con el número de teléfono.
+
+<a href="https://wa.me/5491123456789">Escribinos por WhatsApp</a>
+
+También podés incluir un mensaje predefinido usando el parámetro text:
+
+<a href="https://wa.me/5491123456789?text=Hola%20quiero%20más%20información%20sobre%20sus%20servicios">
+    Consultar por WhatsApp
+</a>
+
+El mensaje debe estar codificado como URL. Por ejemplo:
+
+Hola quiero más información
+
+se convierte en:
+
+Hola%20quiero%20más%20información
+
+En JavaScript podés hacerlo automáticamente:
+
+const mensaje = "Hola, quiero información sobre el producto.";
+const url = `https://wa.me/5491123456789?text=${encodeURIComponent(mensaje)}`;
+
+window.open(url, "_blank");
+2. Enviar un email
+
+Se utiliza el protocolo mailto:.
+
+<a href="mailto:ventas@empresa.com">
+    Enviar Email
+</a>
+
+También podés completar automáticamente:
+
+asunto (subject)
+cuerpo (body)
+copia (cc)
+copia oculta (bcc)
+
+Ejemplo:
+
+<a href="mailto:ventas@empresa.com?subject=Consulta&body=Hola,%20quisiera%20recibir%20información.">
+    Enviar consulta
+</a>
+
+Con JavaScript:
+
+const asunto = encodeURIComponent("Consulta");
+const cuerpo = encodeURIComponent(
+`Hola,
+
+Quisiera recibir información sobre sus servicios.
+
+Gracias.`
+);
+
+window.location.href =
+`mailto:ventas@empresa.com?subject=${asunto}&body=${cuerpo}`;
+
+Esto abre el cliente de correo configurado por el usuario (Outlook, Apple Mail, Thunderbird, etc.). No envía el correo automáticamente.
+
+3. Hacer una llamada
+
+Se utiliza el protocolo tel:.
+
+<a href="tel:+5491123456789">
+    Llamar
+</a>
+
+En celulares abrirá la aplicación de teléfono con el número listo para llamar.
+
+4. Enviar un SMS
+<a href="sms:+5491123456789">
+    Enviar SMS
+</a>
+
+En algunos dispositivos también permite un mensaje inicial:
+
+<a href="sms:+5491123456789?body=Hola,%20quiero%20información">
+    Enviar SMS
+</a>
+5. Botones en HTML
+
+No es necesario usar JavaScript. Podés darle estilo a un enlace para que parezca un botón.
+
+<a class="btn-whatsapp"
+   href="https://wa.me/5491123456789?text=Hola%20quiero%20información">
+    WhatsApp
+</a>
+
+O usar un botón con JavaScript:
+
+<button onclick="window.location.href='tel:+5491123456789'">
+    Llamar
+</button>
+6. Mensajes personalizados según el botón
+
+Es muy común que distintos botones generen mensajes diferentes.
+
+<a href="https://wa.me/5491123456789?text=Hola,%20quiero%20cotizar%20el%20Plan%20Básico">
+    Plan Básico
+</a>
+
+<a href="https://wa.me/5491123456789?text=Hola,%20quiero%20cotizar%20el%20Plan%20Premium">
+    Plan Premium
+</a>
+
+O generarlos dinámicamente:
+
+function contactar(producto) {
+    const mensaje = `Hola, me interesa el producto: ${producto}`;
+    const url =
+        `https://wa.me/5491123456789?text=${encodeURIComponent(mensaje)}`;
+
+    window.open(url, "_blank");
+}
+<button onclick="contactar('Notebook Lenovo')">
+    Consultar
+</button>
+Resumen
+Acción	Enlace
+WhatsApp	https://wa.me/NUMERO?text=MENSAJE
+Email	mailto:correo@dominio.com?subject=ASUNTO&body=CUERPO
+Llamada	tel:+5491123456789
+SMS	sms:+5491123456789?body=MENSAJE
+
+Este enfoque es el estándar y es el que utilizan la mayoría de los sitios web comerciales para botones de contacto, cotización o soporte.

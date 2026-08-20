@@ -1,0 +1,3 @@
+1- revisar si los mensajes de asesores funcionan
+2- hacer que al terminar el iniciar sesion cambie los campos de email y contraseña por uno de codigo, que al ingresar utilize la funcion autenticaicon() del addapter auth.js
+3- investigar como se hace para tener un acceso real desde el front a las funciones de la api

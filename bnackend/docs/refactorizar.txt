@@ -1,0 +1,6 @@
+1- Crear schemas especificos para casos de uso, asi de una routa se obtiene exactamente la respuesta que se busca.
+2- Usar un formato especifico para el como se escriben sus nombres y su case
+3- Crear sub carpetas dependiendo de que se consulte, ej: (models/catalogos: estado.py, ubicacion.py, tipo_media.py, tipo_propiedad.py, operacion.py)
+4- Revisar deps.py y el sistema de autenticacion
+5- Crear servicios para limpiar routes
+6- Mejorar la legibilidad del codigo y usar un formato especifico para esto. Ademas hay que documentar el formato si es posible
