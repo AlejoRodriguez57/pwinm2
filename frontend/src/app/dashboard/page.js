@@ -1,12 +1,10 @@
 import Header from '@/componentes/pp/Header.jsx';
-import Eliminar from '@/componentes/dashboard/test.jsx';
+import Dashboard from '@/componentes/dashboard/Dashboard.jsx';
 
 export default function Home() {
   return (
     <>
-    <Header />
-    <Eliminar />
-    <h1>dashboard</h1>
+    <Dashboard />
     </>
   );
 }
