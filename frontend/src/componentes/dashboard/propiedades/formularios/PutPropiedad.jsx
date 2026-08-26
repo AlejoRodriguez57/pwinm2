@@ -14,8 +14,7 @@ import {
 import { obtenerEmpleados } from "@/adapters/empleados";
 import { obtenerUsuarios } from "@/adapters/usuarios";
 
-
-export default function EditarPropiedad() {
+export default function FormularioPutPropiedad() {
 
     const [operaciones, setOperaciones] = useState([]);
     const [estados, setEstados] = useState([]);

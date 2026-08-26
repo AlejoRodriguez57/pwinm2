@@ -50,7 +50,7 @@ def get_codigo_activo(
 # CREAR
 # ===================================================
 
-def create_codigo_login(
+def post_codigo_login(
     db: Session,
     id_usuario: int,
     codigo_hash: str,

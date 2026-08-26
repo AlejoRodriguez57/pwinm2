@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from src.crud.usuario import get_usuario
 
-from src.core.security import decode_token
+from src.services.auth.token import decode_token
 
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 

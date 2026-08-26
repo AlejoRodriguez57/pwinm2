@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 
-import { eliminarPropiedad } from "@/adapters/propiedades";
+import { crearTiposPropiedad } from "@/adapters/catalogos";
 
 
-export default function FormularioDeletePropiedad() {
+export default function FormularioPostTipoPropiedad() {
 
-    const [id, setId] = useState("");
+    const [nombre, setNombre] = useState("");
 
     const [cargando, setCargando] = useState(false);
 
@@ -15,48 +15,54 @@ export default function FormularioDeletePropiedad() {
     const [error, setError] = useState("");
 
 
-    async function manejarEliminar(e) {
+    function manejarCambio(e) {
+
+        setNombre(e.target.value);
+
+    }
+
+
+    async function manejarSubmit(e) {
 
         e.preventDefault();
 
         setError("");
         setMensaje("");
 
-
-        const idPropiedad = Number(id);
-
-        if (!idPropiedad) {
+        if (!nombre.trim()) {
 
             setError(
-                "Ingresá un ID de propiedad válido."
+                "Ingresá un nombre para el tipo de propiedad."
             );
 
             return;
 
         }
-
-
-        const confirmar = window.confirm(
-            `¿Seguro que querés eliminar la propiedad ${idPropiedad}?`
-        );
-
-        if (!confirmar) {
-            return;
-        }
-
 
         setCargando(true);
 
 
         try {
 
-            await eliminarPropiedad(idPropiedad);
+            const data = {
+                nombre: nombre.trim()
+            };
 
-            setMensaje(
-                `La propiedad ${idPropiedad} fue eliminada correctamente.`
+
+            const respuesta = await crearTiposPropiedad(data);
+
+            console.log(
+                "Ubicación creada:",
+                respuesta
             );
 
-            setId("");
+
+            setMensaje(
+                "Ubicación creada correctamente."
+            );
+
+
+            setNombre("");
 
 
         } catch (error) {
@@ -73,19 +79,13 @@ export default function FormularioDeletePropiedad() {
             } else if (error.status === 403) {
 
                 setError(
-                    "No tenés permisos para eliminar propiedades."
-                );
-
-            } else if (error.status === 404) {
-
-                setError(
-                    "La propiedad no existe."
+                    "No tenés permisos para añadir tipos de propiedad."
                 );
 
             } else {
 
                 setError(
-                    "No se pudo eliminar la propiedad."
+                    "No se pudo añadir la tipos de propiedad."
                 );
 
             }
@@ -104,61 +104,69 @@ export default function FormularioDeletePropiedad() {
         <section className="bg-white rounded-2xl shadow-lg p-8">
 
             <h2 className="text-2xl font-bold text-[#4F5F4E] mb-6">
-                Eliminar propiedad
+                Añadir tipo de propiedad
             </h2>
 
 
             <form
-                onSubmit={manejarEliminar}
+                onSubmit={manejarSubmit}
                 className="flex flex-col gap-5"
             >
+
+                {/* Nombre */}
 
                 <div>
 
                     <label className="block text-sm font-semibold mb-2">
-                        ID de propiedad
+                        Nombre
                     </label>
 
                     <input
-                        type="number"
-                        value={id}
-                        onChange={(e) => setId(e.target.value)}
+                        type="text"
+                        value={nombre}
+                        onChange={manejarCambio}
                         required
-                        min="1"
+                        maxLength={150}
+                        placeholder="Nombre"
                         className="w-full border rounded-xl px-4 py-3"
-                        placeholder="id"
                     />
 
                 </div>
 
 
                 {error && (
+
                     <p className="text-red-500 text-sm">
                         {error}
                     </p>
+
                 )}
 
 
                 {mensaje && (
+
                     <p className="text-green-600 text-sm">
                         {mensaje}
                     </p>
+
                 )}
 
 
                 <button
                     type="submit"
                     disabled={cargando}
-                    className="bg-[#DC1414] text-white rounded-xl py-3 font-semibold hover:opacity-90 disabled:opacity-50"
+                    className="bg-[#00B4E6] text-white rounded-xl py-3 font-semibold hover:opacity-90 disabled:opacity-50"
                 >
                     {cargando
-                        ? "Eliminando..."
-                        : "Eliminar propiedad"}
+                        ? "Añadiendo..."
+                        : "Añadir tipo de propiedad"}
                 </button>
+
 
             </form>
 
         </section>
 
     );
+
 }

@@ -1,17 +1,18 @@
-from datetime import datetime, timedelta, timezone
-
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.crud.usuario import get_usuario_by_email
+from src.crud.usuario import (
+    get_usuario_by_email,
+    get_usuario
+)
+
 from src.crud.codigo_login import (
-    create_codigo_login,
+    post_codigo_login,
+    get_codigo_login,
     get_codigo_activo,
-    incrementar_intentos,
     marcar_como_usado
 )
 
-from src.core.config import settings
 from src.core.security import (
     verify_password,
     generate_otp,
@@ -20,15 +21,21 @@ from src.core.security import (
 )
 
 from src.services.auth.email import send_login_code
+
 from src.services.auth.token import (
     create_access_token,
-    create_refresh_token
+    create_refresh_token,
+    decode_token
 )
 
+from src.core.config import settings
 
-# ===================================================
+from datetime import datetime, timedelta, timezone
+
+
+# ===========================================================
 # LOGIN
-# ===================================================
+# ===========================================================
 
 def login(
     db: Session,
@@ -41,9 +48,8 @@ def login(
         email
     )
 
-    # No diferenciamos entre usuario inexistente
-    # y contraseña incorrecta.
-    if usuario is None:
+    # No revelar si el email existe
+    if not usuario:
 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -60,54 +66,36 @@ def login(
             detail="Credenciales incorrectas"
         )
 
-    # -----------------------------------------------
-    # Generar código OTP
-    # -----------------------------------------------
-
+    # Generar código
     codigo = generate_otp()
 
     codigo_hash = hash_otp(codigo)
 
     expira_en = (
         datetime.now(timezone.utc)
-        + timedelta(
-            minutes=settings.OTP_EXPIRE_MINUTES
-        )
+        + timedelta(minutes=settings.OTP_EXPIRE_MINUTES)
     )
 
-    # -----------------------------------------------
-    # Guardar código
-    # -----------------------------------------------
-
-    create_codigo_login(
-        db=db,
-        id_usuario=usuario.id_usuario,
-        codigo_hash=codigo_hash,
-        expira_en=expira_en
+    post_codigo_login(
+        db,
+        usuario.id_usuario,
+        codigo_hash,
+        expira_en
     )
-
-    # -----------------------------------------------
-    # Enviar email
-    # -----------------------------------------------
 
     send_login_code(
         usuario.email,
         codigo
     )
 
-    # -----------------------------------------------
-    # No devolvemos JWT todavía
-    # -----------------------------------------------
-
     return {
-        "message": "Código de verificación enviado",
-        "email": usuario.email
+        "message": "Código enviado al correo"
     }
 
 
-# ===================================================
+# ===========================================================
 # VERIFICAR LOGIN
-# ===================================================
+# ===========================================================
 
 def verify_login(
     db: Session,
@@ -120,7 +108,7 @@ def verify_login(
         email
     )
 
-    if usuario is None:
+    if not usuario:
 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -132,67 +120,72 @@ def verify_login(
         usuario.id_usuario
     )
 
-    if codigo_db is None:
+    if not codigo_db:
 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Código inválido o expirado"
+            detail="Código inválido"
         )
 
-    # -----------------------------------------------
-    # Límite de intentos
-    # -----------------------------------------------
+    # Comprobar expiración
+    ahora = datetime.now(timezone.utc)
 
-    if codigo_db.intentos >= settings.OTP_MAX_ATTEMPTS:
+    if codigo_db.expira_en < ahora:
 
         raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Demasiados intentos"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Código expirado"
         )
 
-    # -----------------------------------------------
-    # Verificar código
-    # -----------------------------------------------
+        # Comprobar expiración
+        ahora = datetime.now(timezone.utc)
 
+        print("AHORA:", ahora, "EXPIRA_EN:", codigo_db.expira_en, "DIFERENCIA:", codigo_db.expira_en - ahora)
+
+        if codigo_db.expira_en < ahora:
+
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Código expirado"
+            )
+
+        # Comprobar intentos
+        if codigo_db.intentos >= settings.OTP_MAX_ATTEMPTS:
+
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Demasiados intentos"
+            )
+
+    # Verificar código
     if not verify_otp(
         codigo,
         codigo_db.codigo_hash
     ):
 
-        incrementar_intentos(
-            db,
-            codigo_db
-        )
+        codigo_db.intentos += 1
+
+        db.commit()
 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Código incorrecto"
+            detail="Código inválido"
         )
 
-    # -----------------------------------------------
     # Marcar código como utilizado
-    # -----------------------------------------------
-
     marcar_como_usado(
         db,
         codigo_db
     )
 
-    # -----------------------------------------------
     # Crear tokens
-    # -----------------------------------------------
-
     access_token = create_access_token(
-        {
-            "sub": str(usuario.id_usuario),
-            "rol": usuario.rol.nombre
-        }
+        usuario.id_usuario,
+        usuario.rol.nombre
     )
 
     refresh_token = create_refresh_token(
-        {
-            "sub": str(usuario.id_usuario)
-        }
+        usuario.id_usuario
     )
 
     return {
@@ -202,15 +195,62 @@ def verify_login(
     }
 
 
-# ===================================================
-# USUARIO ACTUAL
-# ===================================================
+# ===========================================================
+# REFRESH
+# ===========================================================
 
-def get_me(usuario):
+def refresh_access_token(
+    db: Session,
+    refresh_token: str
+):
+
+    payload = decode_token(
+        refresh_token
+    )
+
+    if payload is None:
+
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token inválido"
+        )
+
+    # Asegurarnos de que sea realmente un refresh token
+    if payload.get("type") != "refresh":
+
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token inválido"
+        )
+
+    user_id = payload.get("sub")
+
+    if user_id is None:
+
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token inválido"
+        )
+
+    usuario = get_usuario(
+        db,
+        int(user_id)
+    )
+
+    if usuario is None:
+
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario inexistente"
+        )
+
+    # Crear nuevo access token
+    access_token = create_access_token(
+        usuario.id_usuario,
+        usuario.rol.nombre
+    )
 
     return {
-        "id_usuario": usuario.id_usuario,
-        "nombre": usuario.nombre,
-        "email": usuario.email,
-        "rol": usuario.rol.nombre
+        "access_token": access_token,
+        "token_type": "bearer"
     }

@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 
-import { eliminarPropiedad } from "@/adapters/propiedades";
+import {
+    eliminarMedia,
+} from "@/adapters/media";
 
 
-export default function FormularioDeletePropiedad() {
+export default function FormularioDeleteMedia() {
 
     const [id, setId] = useState("");
 
@@ -23,12 +25,13 @@ export default function FormularioDeletePropiedad() {
         setMensaje("");
 
 
-        const idPropiedad = Number(id);
+        const idMedia = Number(id);
 
-        if (!idPropiedad) {
+
+        if (!idMedia) {
 
             setError(
-                "Ingresá un ID de propiedad válido."
+                "Ingresá un ID de media válido."
             );
 
             return;
@@ -37,8 +40,9 @@ export default function FormularioDeletePropiedad() {
 
 
         const confirmar = window.confirm(
-            `¿Seguro que querés eliminar la propiedad ${idPropiedad}?`
+            `¿Seguro que querés eliminar la media ${idMedia}?`
         );
+
 
         if (!confirmar) {
             return;
@@ -50,11 +54,13 @@ export default function FormularioDeletePropiedad() {
 
         try {
 
-            await eliminarPropiedad(idPropiedad);
+            await eliminarMedia(idMedia);
+
 
             setMensaje(
-                `La propiedad ${idPropiedad} fue eliminada correctamente.`
+                `La media ${idMedia} fue eliminada correctamente.`
             );
+
 
             setId("");
 
@@ -73,19 +79,19 @@ export default function FormularioDeletePropiedad() {
             } else if (error.status === 403) {
 
                 setError(
-                    "No tenés permisos para eliminar propiedades."
+                    "No tenés permisos para eliminar media."
                 );
 
             } else if (error.status === 404) {
 
                 setError(
-                    "La propiedad no existe."
+                    "La media no existe."
                 );
 
             } else {
 
                 setError(
-                    "No se pudo eliminar la propiedad."
+                    "No se pudo eliminar la media."
                 );
 
             }
@@ -104,7 +110,7 @@ export default function FormularioDeletePropiedad() {
         <section className="bg-white rounded-2xl shadow-lg p-8">
 
             <h2 className="text-2xl font-bold text-[#4F5F4E] mb-6">
-                Eliminar propiedad
+                Eliminar media
             </h2>
 
 
@@ -116,7 +122,7 @@ export default function FormularioDeletePropiedad() {
                 <div>
 
                     <label className="block text-sm font-semibold mb-2">
-                        ID de propiedad
+                        ID de media
                     </label>
 
                     <input
@@ -133,16 +139,20 @@ export default function FormularioDeletePropiedad() {
 
 
                 {error && (
+
                     <p className="text-red-500 text-sm">
                         {error}
                     </p>
+
                 )}
 
 
                 {mensaje && (
+
                     <p className="text-green-600 text-sm">
                         {mensaje}
                     </p>
+
                 )}
 
 
@@ -153,12 +163,14 @@ export default function FormularioDeletePropiedad() {
                 >
                     {cargando
                         ? "Eliminando..."
-                        : "Eliminar propiedad"}
+                        : "Eliminar media"}
                 </button>
+
 
             </form>
 
         </section>
 
     );
+
 }

@@ -26,11 +26,13 @@ export function AuthProvider({ children }) {
 
     const autenticado = usuario !== null;
 
+
     useEffect(() => {
 
         async function verificarSesion() {
 
-            const token = localStorage.getItem("access_token");
+            const token =
+                localStorage.getItem("access_token");
 
             // No hay token
             if (!token) {
@@ -39,13 +41,15 @@ export function AuthProvider({ children }) {
                 setCargando(false);
 
                 return;
+
             }
 
 
             // Hay token: comprobamos con FastAPI
             try {
 
-                const usuario = await usuarioActual();
+                const usuario =
+                    await usuarioActual();
 
                 setUsuario(usuario);
 
@@ -60,6 +64,10 @@ export function AuthProvider({ children }) {
                     "access_token"
                 );
 
+                localStorage.removeItem(
+                    "refresh_token"
+                );
+
                 setUsuario(null);
 
             } finally {
@@ -67,7 +75,9 @@ export function AuthProvider({ children }) {
                 setCargando(false);
 
             }
+
         }
+
 
         verificarSesion();
 
@@ -80,23 +90,27 @@ export function AuthProvider({ children }) {
 
     }
 
-
     async function verificarCodigo(datos) {
 
-        const respuesta = await autenticacion(
-            datos
-        );
+        const respuesta =
+            await autenticacion(datos);
 
 
-        // Guardamos JWT
+        // Guardamos solamente el ACCESS TOKEN
         localStorage.setItem(
             "access_token",
             respuesta.access_token
         );
 
 
+        // El refresh token ya fue guardado
+        // automáticamente por el navegador
+        // como cookie HttpOnly.
+
+
         // Obtenemos usuario desde FastAPI
-        const usuario = await usuarioActual();
+        const usuario =
+            await usuarioActual();
 
 
         setUsuario(usuario);
@@ -106,8 +120,7 @@ export function AuthProvider({ children }) {
 
     }
 
-
-    function cerrarSesion() {
+    async function cerrarSesion() {
 
         logoutRequest();
 
@@ -132,6 +145,7 @@ export function AuthProvider({ children }) {
 
     };
 
+
     return (
 
         <AuthContext.Provider value={value}>
@@ -144,11 +158,11 @@ export function AuthProvider({ children }) {
 
 }
 
+
 export function useAuth() {
 
-    const context = useContext(
-        AuthContext
-    );
+    const context =
+        useContext(AuthContext);
 
 
     if (!context) {
@@ -159,5 +173,7 @@ export function useAuth() {
 
     }
 
+
     return context;
+
 }
