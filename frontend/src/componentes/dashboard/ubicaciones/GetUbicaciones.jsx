@@ -1,76 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import {
-    obtenerUbicaciones,
-} from "@/adapters/catalogos";
-
-export default function GetUbicaciones() {
-
-    const [ubicaciones, setUbicaciones] = useState([]);
-
-    const [cargando, setCargando] = useState(true);
-    const [error, setError] = useState("");
+import { useState } from "react";
 
 
-    useEffect(() => {
-
-        async function cargarUbicaciones() {
-
-            try {
-
-                setCargando(true);
-                setError("");
-
-                setUbicaciones(await obtenerUbicaciones())
-
-
-
-            } catch (error) {
-
-                console.error(error);
-
-                setError(
-                    "No se pudieron cargar las ubicaciones."
-                );
-
-            } finally {
-
-                setCargando(false);
-
-            }
-
-        }
-
-
-        cargarUbicaciones();
-
-    }, []);
-
-
-    if (cargando) {
-
-        return (
-            <p>
-                Cargando ubicaciones...
-            </p>
-        );
-
-    }
-
-
-    if (error) {
-
-        return (
-            <p className="text-red-500">
-                {error}
-            </p>
-        );
-
-    }
-
-    console.log("UBICACIONES:", ubicaciones);
+export default function GetUbicaciones({ ubicaciones }) {
 
     return (
 
@@ -110,7 +43,7 @@ export default function GetUbicaciones() {
                             {ubicaciones.map((ubicacion) => (
 
                                 <tr
-                                    key={ubicacion.nombre}
+                                    key={ubicacion.id_ubicacion}
                                     className="border-b hover:bg-gray-50"
                                 >
 
@@ -118,7 +51,7 @@ export default function GetUbicaciones() {
                                         {ubicacion.id_ubicacion}
                                     </td>
 
-                                     <td className="p-3">
+                                    <td className="p-3">
                                         {ubicacion.nombre}
                                     </td>
 
@@ -135,5 +68,7 @@ export default function GetUbicaciones() {
             )}
 
         </section>
+
     );
+
 }

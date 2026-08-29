@@ -9,11 +9,27 @@ export function obtenerPropiedades() {
 
 }
 
+export function obtenerPropiedadesConMedia(){
+
+  return apiRequest(
+    "/propiedades/con_media/",
+  );
+
+}
+
 
 export function obtenerPropiedadPorId(id) {
 
   return apiRequest(
     `/propiedades/${id}`
+  );
+
+}
+
+export function obtenerPropiedadPorIdConMedia(id) {
+
+  return apiRequest(
+    `/propiedades/${id}/con_media`
   );
 
 }

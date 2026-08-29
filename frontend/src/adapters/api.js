@@ -31,12 +31,6 @@ export async function apiRequest(
 
     }
 
-
-    console.log("URL:", url);
-    console.log("OPTIONS:", options);
-    console.log("TOKEN:", token);
-
-
     const respuesta =
         await fetch(
             url,

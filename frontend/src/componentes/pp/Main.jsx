@@ -7,9 +7,9 @@ import filtrarPropiedades from '../buscador/filtrado/FiltroValores.jsx';
 import GridPropiedades from './GridPropiedades.jsx';
 import FiltroPorSeleccionMultiple from '../buscador/filtrado/FiltroPorSleccionMultiple.jsx';
 
-import { obtenerPropiedades } from "@/adapters/propiedades";
+import { obtenerPropiedadesConMedia } from "@/adapters/propiedades";
 import { obtenerMedia } from "@/adapters/media";
-import { obtenerOperaciones, obtenerEstados, obtenerUbicaciones, obtenerTiposPropiedad } from "@/adapters/catalogos.js";
+import { obtenerOperaciones, obtenerEstados, obtenerUbicaciones, obtenerTiposPropiedad, obtenerTiposMedia } from "@/adapters/catalogos.js";
 
 import { mapPropiedades } from "@/mappers/propiedadMapper";
 import { mapOperaciones, mapTiposPropiedad, mapUbicaciones} from"@/mappers/catalogoMapper.js";
@@ -21,29 +21,33 @@ export default function Main() {
   useEffect(()=>{
     async function cargarPropiedades(){
       try {
-            const propiedadesBackend =await obtenerPropiedades();
-            const media = await obtenerMedia();
+            const propiedadesBackend = await obtenerPropiedadesConMedia();
             const operaciones = await obtenerOperaciones();
             const estados = await obtenerEstados();
-            const tipos = await obtenerTiposPropiedad();
+            const tiposProps = await obtenerTiposPropiedad();
             const ubicaciones = await obtenerUbicaciones();
+            const tiposMedia= await obtenerTiposMedia();
+
+            console.log("PROPIEDADES BACKEND:", propiedadesBackend);
 
             const propiedades =
                 mapPropiedades(
                     propiedadesBackend,
                     operaciones,
                     estados,
-                    tipos,
+                    tiposProps,
                     ubicaciones,
-                    media
+                    tiposMedia,
                 );
+
+            console.log("PROPIEDADES MAPEADAS:", propiedades);
 
 
             setPropiedades(
                 propiedades
             );
 
-
+            
         } catch(error){
 
             console.error(

@@ -1,13 +1,13 @@
 import Header from "@/componentes/pp/Header";
 import ArticuloPropiedad from "@/componentes/propiedades/ArticuloPropiedad";
 
-import { obtenerPropiedades } from "@/adapters/propiedades";
-import { obtenerMedia } from "@/adapters/media";
+import { obtenerPropiedadPorIdConMedia } from "@/adapters/propiedades";
 import {
   obtenerOperaciones,
   obtenerEstados,
   obtenerUbicaciones,
-  obtenerTiposPropiedad
+  obtenerTiposPropiedad,
+  obtenerTiposMedia
 } from "@/adapters/catalogos";
 
 import { mapPropiedades } from "@/mappers/propiedadMapper";
@@ -18,27 +18,26 @@ export default async function Home({ params }) {
   const { id } = await params;
 
 
-  const propiedadesBackend = await obtenerPropiedades();
-  const media = await obtenerMedia();
+  const propiedadBackend = await obtenerPropiedadPorIdConMedia(id);
 
   const operaciones = await obtenerOperaciones();
   const estados = await obtenerEstados();
   const ubicaciones = await obtenerUbicaciones();
   const tipos = await obtenerTiposPropiedad();
+  const tiposMedia = await obtenerTiposMedia();
 
 
   const propiedades = mapPropiedades(
-    propiedadesBackend,
+    [propiedadBackend],
     operaciones,
     estados,
     tipos,
     ubicaciones,
-    media
+    tiposMedia
   );
 
-  const propiedad = propiedades.find(
-    p => p.id === Number(id)
-  );
+
+  const propiedad = propiedades[0];
 
 
   if (!propiedad) {

@@ -1,74 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import {
-    obtenerTiposPropiedad,
-} from "@/adapters/catalogos";
-
-export default function GetTiposPropiedad() {
-
-    const [tiposPropiedad, setTiposPropiedad] = useState([]);
-
-    const [cargando, setCargando] = useState(true);
-    const [error, setError] = useState("");
-
-
-    useEffect(() => {
-
-        async function cargarTiposPropiedad() {
-
-            try {
-
-                setCargando(true);
-                setError("");
-
-                setTiposPropiedad(await obtenerTiposPropiedad())
-
-
-
-            } catch (error) {
-
-                console.error(error);
-
-                setError(
-                    "No se pudieron cargar los tipos de propiedad."
-                );
-
-            } finally {
-
-                setCargando(false);
-
-            }
-
-        }
-
-
-        cargarTiposPropiedad();
-
-    }, []);
-
-
-    if (cargando) {
-
-        return (
-            <p>
-                Cargando tipos de propiedad...
-            </p>
-        );
-
-    }
-
-
-    if (error) {
-
-        return (
-            <p className="text-red-500">
-                {error}
-            </p>
-        );
-
-    }
+export default function GetTiposPropiedad({ tiposPropiedad }) {
 
     return (
 
@@ -105,19 +37,19 @@ export default function GetTiposPropiedad() {
 
                         <tbody>
 
-                            {tiposPropiedad.map((tiposPropiedad) => (
+                            {tiposPropiedad.map((tipo) => (
 
                                 <tr
-                                    key={tiposPropiedad.nombre}
+                                    key={tipo.id_tipo_propiedad}
                                     className="border-b hover:bg-gray-50"
                                 >
 
                                     <td className="p-3">
-                                        {tiposPropiedad.id_tipo_propiedad}
+                                        {tipo.id_tipo_propiedad}
                                     </td>
 
-                                     <td className="p-3">
-                                        {tiposPropiedad.nombre}
+                                    <td className="p-3">
+                                        {tipo.nombre}
                                     </td>
 
                                 </tr>
@@ -133,5 +65,7 @@ export default function GetTiposPropiedad() {
             )}
 
         </section>
+
     );
+
 }

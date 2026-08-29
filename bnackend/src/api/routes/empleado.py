@@ -36,7 +36,7 @@ def get_empleados(
 
 # Público
 @router.get(
-    "/ArticuloPropiedadAsesor/{id_empleado}",
+    "/ArticuloPropiedadEmpleado/{id_empleado}",
     response_model=ArticuloPropiedadAsesor
 )
 def get_empleado_por_id(

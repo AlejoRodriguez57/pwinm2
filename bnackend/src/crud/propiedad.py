@@ -1,5 +1,7 @@
 from sqlalchemy.exc import SQLAlchemyError
 from src.models.propiedad import Propiedad
+from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload
 
 # ===========================================================
 # CONSULTAS
@@ -21,6 +23,33 @@ def get_propiedad(db: Session, id_prop: int):
     """Devuelve una propiedad por ID."""
     return db.query(Propiedad).filter(Propiedad.id_prop == id_prop).first()
 
+def get_propiedades_con_media(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100
+):
+
+    return (
+        db.query(Propiedad)
+        .options(
+            selectinload(Propiedad.media)
+        )
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+def get_propiedad_con_media(
+    db: Session,
+    id_prop: int
+):
+
+    return (
+        db.query(Propiedad)
+        .options(joinedload(Propiedad.media))
+        .filter(Propiedad.id_prop == id_prop)
+        .first()
+    )
 
 # ===========================================================
 # CREAR

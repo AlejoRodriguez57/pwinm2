@@ -37,14 +37,19 @@ from src.schemas.tipoMedia import (
     TipoMedia
 )
 
+from src.schemas.rol import (
+    RolResponse,
+)
 
 from src.crud import (
     operacion,
     estado,
     ubicacion,
     tipoPropiedad,
-    tipoMedia
+    tipoMedia,
+    rol
 )
+
 
 
 router = APIRouter(
@@ -281,3 +286,17 @@ def eliminar_tipo_media(
         db,
         id_tipo_media
     )
+
+# ==========================================================
+# ROLES
+# ==========================================================
+
+@router.get(
+    "/roles",
+    response_model=list[RolResponse]
+)
+def get_roles(
+    db: Session = Depends(get_db),
+    usuario = Depends(require_roles("admin"))    
+):
+    return rol.get_roles(db)

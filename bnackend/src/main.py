@@ -10,6 +10,7 @@ from src.api.routes import catalogos
 from src.api.routes import auth
 from src.api.routes import usuario
 from src.api.routes import empleado
+from src.api.routes import empleadoYUsuario
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -36,6 +37,7 @@ app.include_router(catalogos.router)
 app.include_router(auth.router)
 app.include_router(usuario.router)
 app.include_router(empleado.router)
+app.include_router(empleadoYUsuario.router)
 
 @app.get("/")
 def root():

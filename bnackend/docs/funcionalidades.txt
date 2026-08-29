@@ -1,5 +1,3 @@
-1- hacer el sistema de doble verificaciones para produccion, que no utilize mi gmail personal por ejemplo.
-2- sistema de peticiones
-3- baja de archivos con verificacion y guardado auomatico
-4- agregar __init__.py
-5- eliminar el campo de whatsappLink en empleados
+1- sistema de peticiones
+2- baja de archivos con verificacion y guardado auomatico
+3- agregar __init__.py

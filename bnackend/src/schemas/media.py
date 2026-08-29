@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
+
 class MediaBase(BaseModel):
     id_prop: int
     link: str
@@ -11,6 +12,7 @@ class MediaCreate(MediaBase):
 
 
 class MediaUpdate(BaseModel):
+    id_prop: int | None = None
     link: str | None = None
     id_tipo_media: int | None = None
 

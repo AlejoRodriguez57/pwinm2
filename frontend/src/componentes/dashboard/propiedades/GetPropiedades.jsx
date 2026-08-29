@@ -2,121 +2,23 @@
 
 import { useEffect, useState } from "react";
 
-import { obtenerPropiedades } from "@/adapters/propiedades";
+import { obtenerPropiedadesConMedia } from "@/adapters/propiedades";
 
 import {
     obtenerOperaciones,
     obtenerEstados,
     obtenerTiposPropiedad,
     obtenerUbicaciones,
+    obtenerTiposMedia
 } from "@/adapters/catalogos";
-
-import { obtenerMedia } from "@/adapters/media";
 
 import { mapPropiedades } from "@/mappers/propiedadMapper.js";
 
 
-export default function GetPropiedades() {
-
-    const [propiedades, setPropiedades] = useState([]);
-
-    const [cargando, setCargando] = useState(true);
-    const [error, setError] = useState("");
+export default function GetPropiedades({ propiedades }) {
 
     const [descripcionSeleccionada, setDescripcionSeleccionada] = useState(null);
     const [mediaSeleccionada, setMediaSeleccionada] = useState(null);
-
-
-    useEffect(() => {
-
-        async function cargarPropiedades() {
-
-            try {
-
-                setCargando(true);
-                setError("");
-
-
-                const [
-                    propiedadesData,
-                    operacionesData,
-                    estadosData,
-                    tiposPropData,
-                    ubicacionesData,
-                    mediaData,
-                ] = await Promise.all([
-
-                    obtenerPropiedades(),
-
-                    obtenerOperaciones(),
-
-                    obtenerEstados(),
-
-                    obtenerTiposPropiedad(),
-
-                    obtenerUbicaciones(),
-
-                    obtenerMedia(),
-
-                ]);
-
-
-                const propiedadesMapeadas = mapPropiedades(
-                    propiedadesData,
-                    operacionesData,
-                    estadosData,
-                    tiposPropData,
-                    ubicacionesData,
-                    mediaData
-                );
-
-
-                setPropiedades(propiedadesMapeadas);
-
-
-            } catch (error) {
-
-                console.error(error);
-
-                setError(
-                    "No se pudieron cargar las propiedades."
-                );
-
-            } finally {
-
-                setCargando(false);
-
-            }
-
-        }
-
-
-        cargarPropiedades();
-
-    }, []);
-
-
-    if (cargando) {
-
-        return (
-            <p>
-                Cargando propiedades...
-            </p>
-        );
-
-    }
-
-
-    if (error) {
-
-        return (
-            <p className="text-red-500">
-                {error}
-            </p>
-        );
-
-    }
-
 
     return (
 
@@ -290,29 +192,79 @@ export default function GetPropiedades() {
                 </div>
 
             )}
-        
+                    
             {mediaSeleccionada !== null && (
 
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-                    <div className="bg-white rounded-2xl p-6 max-w-3xl w-full mx-4">
+                    <div className="bg-white rounded-2xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
 
                         <h3 className="text-xl font-bold mb-4">
                             Media de la propiedad
                         </h3>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-6">
 
                             {mediaSeleccionada.map((item, index) => (
 
-                                <div key={index}>
+                                <div
+                                    key={item.id_media ?? index}
+                                    className="border border-gray-200 rounded-xl p-4"
+                                >
 
+                                    {/* Información de la media */}
+                                    <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
+
+                                        <p>
+                                            <span className="font-semibold">
+                                                ID media:
+                                            </span>{" "}
+                                            {item.id_media ?? "Sin ID"}
+                                        </p>
+
+                                        <p>
+                                            <span className="font-semibold">
+                                                ID propiedad:
+                                            </span>{" "}
+                                            {item.id_prop ?? "Sin ID"}
+                                        </p>
+
+                                        <p>
+                                            <span className="font-semibold">
+                                                Tipo:
+                                            </span>{" "}
+                                            {item.tipo ?? "Sin tipo"}
+                                        </p>
+
+                                        <p>
+                                            <span className="font-semibold">
+                                                Índice:
+                                            </span>{" "}
+                                            {index}
+                                        </p>
+
+                                    </div>
+
+                                    {/* Link */}
+                                    <div className="mb-4">
+
+                                        <p className="font-semibold text-sm mb-1">
+                                            Link:
+                                        </p>
+
+                                        <p className="text-sm text-blue-600 break-all">
+                                            {item.link}
+                                        </p>
+
+                                    </div>
+
+                                    {/* Contenido multimedia */}
                                     {item.tipo === "imagen" ? (
 
                                         <img
                                             src={item.link}
                                             alt={`Media ${index + 1}`}
-                                            className="w-full rounded-xl"
+                                            className="w-full max-h-80 object-contain rounded-xl"
                                         />
 
                                     ) : (
@@ -320,7 +272,7 @@ export default function GetPropiedades() {
                                         <video
                                             src={item.link}
                                             controls
-                                            className="w-full rounded-xl"
+                                            className="w-full max-h-80 rounded-xl"
                                         />
 
                                     )}

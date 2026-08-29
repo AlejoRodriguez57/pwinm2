@@ -32,22 +32,19 @@ def get_media(
     return crud.get_media(db)
 
 
-
 # ----------------------------------
 # Obtener media por propiedad
 # ----------------------------------
 
 @router.get("/propiedad/{id_prop}", response_model=list[Media])
-def get_media_propiedad(
+def get_media_por_propiedad(
     id_prop: int,
     db: Session = Depends(get_db)
 ):
-
-    return crud.get_media_by_propiedad(
+    return crud.get_media_por_propiedad(
         db,
         id_prop
     )
-
 
 
 # ----------------------------------
@@ -55,12 +52,12 @@ def get_media_propiedad(
 # ----------------------------------
 
 @router.get("/{id_media}", response_model=Media)
-def get_media_id(
+def get_media_por_id(
     id_media: int,
     db: Session = Depends(get_db)
 ):
 
-    media_db = crud.get_media(
+    media_db = crud.get_media_por_id(
         db,
         id_media
     )
@@ -72,7 +69,6 @@ def get_media_id(
         )
 
     return media_db
-
 
 
 # ----------------------------------
@@ -92,22 +88,22 @@ def crear_media(
     )
 
 
-
 # ----------------------------------
 # Modificar media
 # ----------------------------------
 
 @router.put("/{id_media}", response_model=Media)
-def modificar_media(
+def update_media(
     id_media: int,
     datos: MediaUpdate,
     db: Session = Depends(get_db),
     usuario_actual = Depends(require_roles("admin", "editor"))
 ):
 
-    media_db = crud.get_media(
+    media_db = crud.update_media(
         db,
-        id_media
+        id_media,
+        datos
     )
 
     if not media_db:
@@ -116,12 +112,7 @@ def modificar_media(
             detail="Media no encontrada"
         )
 
-    return crud.update_media(
-        db,
-        media_db,
-        datos
-    )
-
+    return media_db
 
 
 # ----------------------------------
@@ -129,13 +120,13 @@ def modificar_media(
 # ----------------------------------
 
 @router.delete("/{id_media}", response_model=Media)
-def eliminar_media(
+def delete_media(
     id_media: int,
     db: Session = Depends(get_db),
     usuario_actual = Depends(require_roles("admin", "editor"))
 ):
 
-    media_db = crud.get_media(
+    media_db = crud.delete_media(
         db,
         id_media
     )
@@ -146,7 +137,4 @@ def eliminar_media(
             detail="Media no encontrada"
         )
 
-    return crud.delete_media(
-        db,
-        media_db
-    )
+    return media_db

@@ -51,6 +51,7 @@ export default function FormularioPostUbicacion() {
 
             const respuesta = await crearUbicaciones(data);
 
+
             console.log(
                 "Ubicación creada:",
                 respuesta
@@ -157,9 +158,11 @@ export default function FormularioPostUbicacion() {
                     disabled={cargando}
                     className="bg-[#00B4E6] text-white rounded-xl py-3 font-semibold hover:opacity-90 disabled:opacity-50"
                 >
+
                     {cargando
                         ? "Añadiendo..."
                         : "Añadir ubicación"}
+
                 </button>
 
 

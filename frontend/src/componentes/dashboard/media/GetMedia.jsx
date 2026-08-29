@@ -1,75 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import {
-    obtenerMedia,
-} from "@/adapters/media";
-
-
-export default function GetMedia() {
-
-    const [media, setMedia] = useState([]);
-
-    const [cargando, setCargando] = useState(true);
-    const [error, setError] = useState("");
-
-
-    useEffect(() => {
-
-        async function cargarMedia() {
-
-            try {
-
-                setCargando(true);
-                setError("");
-
-                setMedia(await obtenerMedia());
-
-
-            } catch (error) {
-
-                console.error(error);
-
-                setError(
-                    "No se pudo cargar la media."
-                );
-
-            } finally {
-
-                setCargando(false);
-
-            }
-
-        }
-
-
-        cargarMedia();
-
-    }, []);
-
-
-    if (cargando) {
-
-        return (
-            <p>
-                Cargando media...
-            </p>
-        );
-
-    }
-
-
-    if (error) {
-
-        return (
-            <p className="text-red-500">
-                {error}
-            </p>
-        );
-
-    }
-
+export default function GetMedia({ media }) {
 
     return (
 
@@ -152,4 +83,5 @@ export default function GetMedia() {
         </section>
 
     );
+
 }

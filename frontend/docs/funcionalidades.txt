@@ -1,2 +1,1 @@
-1- revisar si los mensajes de asesores funcionan
-2- hacer que en dashboard la media de propiedades aparezca con id y tipo de media, probablemente creando un mapper propio o usando los datos directamente del back
+1- hacer que cartaPropiedad cambie el color del estado dependiendo de si la operacion esta dispoible y en venta o alquiler

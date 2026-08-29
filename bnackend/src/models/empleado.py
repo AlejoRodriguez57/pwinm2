@@ -7,7 +7,7 @@ class Empleado(Base):
     __tablename__ = "empleados"
 
     id_empleado = Column(Integer,primary_key=True,index=True)
-    id_usuario = Column(Integer,ForeignKey("usuarios.id_usuario"),nullable=False)
+    id_usuario = Column(Integer,ForeignKey("usuarios.id_usuario"),nullable=False, unique=True)
     whatsappLink = Column(String,nullable=True)
     img = Column(String,nullable=True)
     activo = Column(Boolean,default=True)

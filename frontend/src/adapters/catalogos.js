@@ -225,3 +225,11 @@ export function editarTiposMedia(id, data){
 
 }
 
+export function obtenerRoles(){
+
+ return apiRequest(
+   "/catalogos/roles/"
+ );
+
+}
+

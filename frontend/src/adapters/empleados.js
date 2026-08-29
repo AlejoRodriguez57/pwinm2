@@ -9,7 +9,7 @@ export function obtenerEmpleados(){
 
 }
 
-export function obtenerEmpleadosPorId(id){
+export function obtenerEmpleadoPorId(id){
 
  return apiRequest(
    `/empleados/${id}`,
@@ -20,7 +20,7 @@ export function obtenerEmpleadosPorId(id){
 
 }
 
-export function crearEmpleados(data){
+export function crearEmpleado(data){
 
   return apiRequest(
     `/empleados/`,
@@ -32,7 +32,7 @@ export function crearEmpleados(data){
 
 }
 
-export function eliminarEmpleados(id){
+export function eliminarEmpleado(id){
 
   return apiRequest(
     `/empleados/${id}`,
@@ -43,7 +43,7 @@ export function eliminarEmpleados(id){
 
 }
 
-export function editarEmpleados(id, data){
+export function editarEmpleado(id, data){
 
   return apiRequest(
     `/empleados/${id}`,
@@ -54,11 +54,47 @@ export function editarEmpleados(id, data){
   );
 }
 
-export function obtenerEmpleadoPorPropiedad(id) {
+export function obtenerEmpleadoPorPropiedad(id){
+
   return apiRequest(
-    `/empleados/ArticuloPropiedadAsesor/${id}`,
-    {
-      method: "GET",
-    }
+    `/empleados/ArticuloPropiedadEmpleado/${id}`,
+        {
+          method:"get"
+        }
   );
+}
+
+export function obtenerEmpleadoYUsuario() {
+    return apiRequest(
+        `/empleados/empleadoYUsuario/`
+    );
+}
+
+export function crearEmpleadoYUsuario(data) {
+    return apiRequest(
+        `/empleados/empleadoYUsuario/`,
+        {
+            method: "POST",
+            body: JSON.stringify(data)
+        }
+    );
+}
+
+export function eliminarEmpleadosYUsuario(id) {
+    return apiRequest(
+        `/empleados/empleadoYUsuario/${id}`,
+        {
+            method: "DELETE"
+        }
+    );
+}
+
+export function editarEmpleadosYUsuario(id, data) {
+    return apiRequest(
+        `/empleados/empleadoYUsuario/${id}`,
+        {
+            method: "PUT",
+            body: JSON.stringify(data)
+        }
+    );
 }

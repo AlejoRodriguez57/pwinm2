@@ -3,6 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
+from src.schemas.media import Media
 
 # -------------------------
 # Base
@@ -70,3 +71,8 @@ class Propiedad(PropiedadBase):
     id_prop: int
 
     model_config = ConfigDict(from_attributes=True)
+
+# Respuesta con media # ------------------------- 
+
+class PropiedadConMedia(Propiedad): 
+    media: list[Media] = []

@@ -11,7 +11,8 @@ from src.api.deps import (
 from src.schemas.propiedad import (
     PropiedadCreate,
     PropiedadUpdate,
-    Propiedad
+    Propiedad,
+    PropiedadConMedia
 )
 
 from src.crud import propiedad as crud
@@ -21,7 +22,6 @@ router = APIRouter(
     prefix="/propiedades",
     tags=["Propiedades"]
 )
-
 
 # ----------------------------------
 # Obtener todas
@@ -171,6 +171,25 @@ def crear_propiedad(
         propiedad
     )
 
+# ----------------------------------
+# Obtener todas con media
+# ----------------------------------
+
+@router.get(
+    "/con_media",
+    response_model=list[PropiedadConMedia]
+)
+def get_propiedades_con_media(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
+
+    return crud.get_propiedades_con_media(
+        db,
+        skip,
+        limit
+    )
 
 # ----------------------------------
 # Obtener una
@@ -186,7 +205,23 @@ def get_propiedad(
         db,
         id_prop
     )
+# ----------------------------------
+# Obtener una propiedad con media
+# ----------------------------------
 
+@router.get(
+    "/{id_prop}/con_media",
+    response_model=PropiedadConMedia
+)
+def get_propiedad_con_media(
+    id_prop: int,
+    db: Session = Depends(get_db)
+):
+
+    return crud.get_propiedad_con_media(
+        db,
+        id_prop
+    )
 # ----------------------------------
 # Modificar
 # ----------------------------------
